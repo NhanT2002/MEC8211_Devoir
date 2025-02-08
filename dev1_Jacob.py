@@ -2,15 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-
 D_eff = 10**(-10)
 S = 2*10**(-8)
 Ce = 20
 
 N_tot = 5
 R = 0.5
-
 
 def mat1(n):
     r = np.zeros(n)
@@ -77,7 +74,7 @@ def erreurs(C,C_ana):
 ### QUESTION D)
 
 r1,dr1,C1,C_ana1 = mat1(N_tot)
-plt.plot(r1,C_ana1,label='Solution analytique')
+plt.plot(r1,C_ana1,"k--",label='Solution analytique')
 plt.plot(r1,C1,label='Solution numérique')
 plt.xlabel("Position [m]")
 plt.xlim([0,R])
@@ -122,12 +119,13 @@ plt.show()
 ### QUESTION E)
 
 r2,dr2,C2,C_ana2 = mat2(N_tot)
-plt.plot(r2,C_ana2,label='Solution analytique')
-plt.plot(r2,C2,label='Solution numérique')
+plt.plot(r2,C_ana2,"k--",label='Solution analytique')
+plt.plot(r1,C1,label='Solution numérique, schéma avant')
+plt.plot(r2,C2,label='Solution numérique, schéma centré')
 plt.xlabel("Position [m]")
 plt.xlim([0,R])
 plt.ylabel(r"Concentration [$mol/m^3$]")
-plt.title("Concentration en sel en fonction de la position radiale dans le pilier \n Schéma centré de la dérivée première")
+plt.title("Concentration en sel en fonction de la position radiale dans le pilier \n Différents schémas de la dérivée première")
 plt.legend()
 plt.grid()
 plt.show()
@@ -157,7 +155,7 @@ plt.loglog(dr,L2,label=r'Erreur $L_2$')
 plt.loglog(dr,L_inf,label=r'Erreur $L_{\infty}$')
 plt.xlabel("Pas de distance [m]")
 plt.ylabel("Erreur")
-plt.title("Erreurs \n Schéma avant de la dérivée première")
+plt.title("Erreurs \n Schéma centré de la dérivée première")
 plt.legend()
 plt.grid()
 plt.show()
