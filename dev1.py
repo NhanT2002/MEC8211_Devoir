@@ -74,7 +74,7 @@ plt.legend()
 plt.grid()
 plt.show()
 
-def convergence_plot(scheme_order) :
+def convergence_plot(scheme_order, scheme_name) :
     L1_array = []
     L2_array = []
     L_inf_array = []
@@ -127,7 +127,7 @@ def convergence_plot(scheme_order) :
     plt.legend()
     plt.xlabel(f'$\Delta r$ [m]')
     plt.ylabel('Erreur [mol/$m^3$]')
-    plt.title("Convergence de l'erreur en fonction de $\Delta r$")
+    plt.title(f"Convergence de l'erreur en fonction de $\Delta r$ pour le {scheme_name}")
     plt.xscale('log')
     plt.yscale('log')
     plt.grid()
@@ -138,5 +138,5 @@ def convergence_plot(scheme_order) :
     plt.gca().spines['top'].set_linewidth(2)
     plt.tick_params(width=2, which='both', direction='in', top=True, right=True, length=6)
 
-convergence_plot(C_order_1)
-convergence_plot(C_order_2)
+convergence_plot(C_order_1, "schéma d'ordre 1")
+convergence_plot(C_order_2, "schéma d'ordre 2")
