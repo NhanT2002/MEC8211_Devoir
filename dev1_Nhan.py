@@ -59,20 +59,6 @@ def C_order_2(N) :
     C_ana = S/(4*D_eff)*R**2*(r**2/R**2 -1) + Ce
     return C, C_ana, r
 
-N = 20 # number of grid points
-C_o1, C_ana, r = C_order_1(N)
-C_o2, C_ana, r = C_order_2(N)
-
-plt.figure()
-plt.plot(r, C_o1, "o", label=f'Solution numérique, schéma d\'ordre 1')
-plt.plot(r, C_o2, "o", label=f'Solution numérique, schéma d\'ordre 2')
-plt.plot(r, C_ana, label='Solution analytique')
-plt.xlabel('r [m]')
-plt.ylabel('C [mol/$m^3$]')
-plt.title(f"Profil de concentration à l'état stationnaire  (N={N})")
-plt.legend()
-plt.grid()
-plt.show()
 
 def convergence_plot(scheme_order, scheme_name) :
     L1_array = []
@@ -89,7 +75,7 @@ def convergence_plot(scheme_order, scheme_name) :
         L1_array.append(L1)
         L2_array.append(L2)
         L_inf_array.append(L_inf)
-        dr_array.append(R/n)
+        dr_array.append(np.abs(R/n))
 
     L1_array = np.array(L1_array)
     L2_array = np.array(L2_array)
@@ -140,3 +126,51 @@ def convergence_plot(scheme_order, scheme_name) :
 
 convergence_plot(C_order_1, "schéma d'ordre 1")
 convergence_plot(C_order_2, "schéma d'ordre 2")
+
+N = 20 # number of grid points
+C_o1, C_ana, r = C_order_1(N)
+C_o2, C_ana, r = C_order_2(N)
+
+
+plt.figure()
+plt.plot(r, C_o1, "o", label=f'Solution numérique, schéma d\'ordre 1')
+plt.plot(r, C_o2, "o", label=f'Solution numérique, schéma d\'ordre 2')
+plt.plot(r, C_ana, label='Solution analytique')
+plt.xlabel('r [m]')
+plt.ylabel('C [mol/$m^3$]')
+plt.title(f"Profil de concentration à l'état stationnaire  (N={N})")
+plt.legend()
+plt.grid()
+plt.show()
+
+# Test de symétrie
+R = -R
+C_o1_sym, C_ana_sym, r_sym = C_order_1(N)
+C_o2_sym, C_ana_sym, r_sym = C_order_2(N)
+
+r_sym = np.flip(r_sym) # flip the array to begin from -R to 0
+C_ana_sym = np.flip(C_ana_sym)
+C_o1_sym = np.flip(C_o1_sym)
+C_o2_sym = np.flip(C_o2_sym)
+
+plt.figure()
+plt.plot(r, C_o1, "o", label=f'Solution numérique')
+plt.plot(r_sym, C_o1_sym, "o", label=f'Solution numérique (test symétrie)')
+plt.plot(np.hstack((r_sym,r)), np.hstack((C_ana_sym, C_ana)), label='Solution analytique')
+plt.xlabel('r [m]')
+plt.ylabel('C [mol/$m^3$]')
+plt.title(f"Profil de concentration à l'état stationnaire  (N={N})\n Ordre 1")
+plt.legend()
+plt.grid()
+plt.show()
+
+plt.figure()
+plt.plot(r, C_o2, "o", label=f'Solution numérique')
+plt.plot(r_sym, C_o2_sym, "o", label=f'Solution numérique (test symétrie)')
+plt.plot(np.hstack((r_sym,r)), np.hstack((C_ana_sym, C_ana)), label='Solution analytique')
+plt.xlabel('r [m]')
+plt.ylabel('C [mol/$m^3$]')
+plt.title(f"Profil de concentration à l'état stationnaire  (N={N})\n Ordre 2")
+plt.legend()
+plt.grid()
+plt.show()
