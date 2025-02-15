@@ -1,14 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+# Définition des paramètres de l'équation à résoudre
 D_eff = 10**(-10)
 S = 2*10**(-8)
 Ce = 20
 
+# Définition du domaine
 N_tot = 5
 R = 0.5
 
+
+# Système matriciel d'ordre 1
 def mat1(n):
     r = np.zeros(n)
     dr = R/(n - 1)
@@ -33,6 +36,7 @@ def mat1(n):
     return r, dr, C, C_ana
 
 
+# Système matriciel d'ordre 2
 def mat2(n):
     r = np.zeros(n)
     dr = R/(n - 1)
@@ -42,8 +46,9 @@ def mat2(n):
         C_ana[i] = S*R**2/(4*D_eff)*(r[i]**2/R**2 - 1) + Ce
         
     coef = np.zeros([n,n])
-    coef[0,0] = -1
-    coef[0,1] = 1
+    coef[0,0] = -3
+    coef[0,1] = 4
+    coef[0,2] = -1
     coef[-1,-1] = 1
     RHS = np.zeros(n)
     RHS[-1] = Ce
@@ -57,6 +62,7 @@ def mat2(n):
     return r,dr,C,C_ana
 
 
+# Définition de l'erreur
 def erreurs(C,C_ana):
     N = len(C)
     L1 = 0
@@ -73,6 +79,7 @@ def erreurs(C,C_ana):
 
 ### QUESTION D)
 
+# Affichage des solutions analytique et numériques
 r1,dr1,C1,C_ana1 = mat1(N_tot)
 plt.plot(r1,C_ana1,"k--",label='Solution analytique')
 plt.plot(r1,C1,label='Solution numérique')
@@ -84,6 +91,7 @@ plt.legend()
 plt.grid()
 plt.show()
 
+# Calcul de l'erreur pour différents maillages, ordre 1
 it = 6
 dr = np.zeros(it)
 L1 = np.zeros(it)
@@ -118,6 +126,7 @@ plt.show()
 
 ### QUESTION E)
 
+# Calcul de l'erreur pour différents maillages, ordre 2
 r2,dr2,C2,C_ana2 = mat2(N_tot)
 plt.plot(r2,C_ana2,"k--",label='Solution analytique')
 plt.plot(r1,C1,label='Solution numérique, schéma avant')
