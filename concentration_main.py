@@ -80,7 +80,11 @@ ax = fig.add_subplot()
 ax.plot(dr_range, L1_range_o1, '-o', label='$L_1$, données numériques')
 ax.plot(dr_range, L2_range_o1, '-o', label='$L_2$, données numériques')
 ax.plot(dr_range, L_inf_range_o1, 'k--', lw = 1, label=r'$L_{\inf}$, données numériques')
+
 # Reste à rajouter les polyfit.
+erreur_ordre_observe(dr_range, L1_range_o1)
+erreur_ordre_observe(dr_range, L2_range_o1)
+erreur_ordre_observe(dr_range, L_inf_range_o1)
 
 ax.set_xlabel(r'Taille de maille $\Delta r$ [m]')
 ax.set_xscale('log')
@@ -97,7 +101,11 @@ ax = fig.add_subplot()
 ax.plot(dr_range, L1_range_o2, '-o', label='$L1$')
 ax.plot(dr_range, L2_range_o2, '-o', label='$L2$')
 ax.plot(dr_range, L_inf_range_o2, 'k--', lw = 1, label=r'$L_{\inf}$')
+
 # Reste à rajouter les polyfit.
+erreur_ordre_observe(dr_range, L1_range_o2)
+erreur_ordre_observe(dr_range, L2_range_o2)
+erreur_ordre_observe(dr_range, L_inf_range_o2)
 
 ax.set_xlabel(r'Taille de maille $\Delta r$ [m]')
 ax.set_xscale('log')

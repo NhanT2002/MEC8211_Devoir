@@ -21,22 +21,27 @@ def concentration_mdf_o1(prm):
     
     #Initilisation de la matrice LHS
     A = np.zeros((N, N))
+    # Conditions limites
+    # Utilisation de l'approximation avant de la dérivée 1ère
     A[0,0] = -1
     A[0,1] = 1
     A[-1,-1] = 1
+    
     #Initialisation du vecteur RHS
     B = np.zeros(N)
     
-    #Remplir la matrice LHS
-    for i in range(1, N-1): #Exclure les premier et derniers noeuds
+    #Remplir les coefficient
+    for i in range(1, N-1): #Exclure les premiers et derniers noeuds déjà définis
+        #Remplir les coefficients de la matrice A
         A[i,i-1] = 1/(dr*dr)
         A[i,i] = -(2/(dr*dr) + 1/(r[i]*dr))
         A[i,i+1] = 1/(dr*dr) + 1/(r[i]*dr)
-        
+        #Remplir les coefficients du vecteur B
         B[i] = prm.S/prm.D_eff
-        
+    
     B[-1] = prm.C_e
-    #Resolution dy systeme matriciel
+    
+    #Résolution dy système matriciel
     C = np.linalg.solve(A, B)
     
     return r, dr, C
@@ -46,10 +51,14 @@ def concentration_mdf_o2(prm):
     r = np.linspace(0, prm.R, N)
     dr = prm.R/(N-1)
     
+    
     #Initilisation de la matrice LHS
     A = np.zeros((N, N))
-    A[0,0] = -1
-    A[0,1] = 1
+    # Conditions limites
+    # Utilisation de l'approximation avant "Gear" de la dérivée 1ère
+    A[0,0] = -3/(2*dr)
+    A[0,1] = 4/(2*dr)
+    A[0,2] = -1/(2*dr)
     A[-1,-1] = 1
     #Initialisation du vecteur RHS
     B = np.zeros(N)
@@ -68,20 +77,3 @@ def concentration_mdf_o2(prm):
     
     
     return r, dr, C
-
-def erreur_L1(prm, u, u_ref):
-    L1 = 1/prm.N*sum(abs(u-u_ref))
-    return L1
-
-def erreur_L2(prm, u, u_ref):
-    L2 = np.sqrt(1/prm.N*sum(abs(u-u_ref)**2))
-    return L2
-
-def erreur_inf(u, u_ref):
-    L_inf = max(abs(u-u_ref))
-    return L_inf
-
-        
-        
-    
-    
