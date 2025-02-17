@@ -8,7 +8,7 @@ from graphique_convergence import *
 class parametres():
     C_e = 20         # Concentration en sel à la surface du poteau [mol/m^3]
     S = 2e-8         # Terme source constant [mol/m^3/s]
-    D_eff = 1e-10   # Coefficient de diffusion effectif du sel dans le béton [1/s]
+    D_eff = 1e-10    # Coefficient de diffusion effectif du sel dans le béton [1/s]
     R = 0.5          # Rayon du pilier [m]
     N = 20           # Nombre de noeuds [-]
 

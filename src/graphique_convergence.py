@@ -1,14 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb 17 01:07:12 2025
-
-@author: dorid
-"""
+#Importation des modules
 import numpy as np
 import matplotlib.pyplot as plt
 from erreur_fct import *
 from concentration_fct import *
 
+#Définition de la fonction de graphique de convergence
 def graphique_convergence_ordre(prm, sol_anal, mdf_oi, ordre_schema):
     '''
     Fonction qui trace le graphique de l'ordre de covergence de l'erreur 
@@ -27,7 +23,6 @@ def graphique_convergence_ordre(prm, sol_anal, mdf_oi, ordre_schema):
     mdf_oi : fonction qui simule la solution numérique par MDF d'ordre "i"
             spécifiée.
     ordre_schema : float64 qui définit l'ordre de convergence du schéma formel
-        DESCRIPTION.
 
     Returns
     -------
