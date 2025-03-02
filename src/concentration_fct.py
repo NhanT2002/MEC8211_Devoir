@@ -107,7 +107,7 @@ def concentration_mdf_o2(prm):
         position [mol/L]
 
     '''
-    # Définition de la discrétisation temporelle
+    # Définition de la discrétisation spatiale
     N = prm.N
     r = np.linspace(0, prm.R, N)
     dr = prm.R/(N-1)
@@ -136,3 +136,47 @@ def concentration_mdf_o2(prm):
     C = np.linalg.solve(A, B)
     
     return r, dr, C
+
+def concentration_mdf_o2_implicite(prm):
+    # Définition de la discrétisation spatiale
+    N = prm.N
+    r = np.linspace(0, prm.R, N)
+    dr = prm.R/(N-1) 
+    
+    # Définition de la discrétisation temporelle
+    dt = prm.dt
+    temps = np.arange(prm.ti, prm.tf, dt)
+    
+    #Initialisation de la matrice LHS
+    A = np.zeros((N,N))
+    # Utilisation de l'approximation avant "Gear" de la dérivée 1ère
+    A[0,0] = -3/(2*dr)
+    A[0,1] = 4/(2*dr)
+    A[0,2] = -1/(2*dr)
+    A[-1,-1] = 1
+    
+    #Remplir les coefficients de la matrice LHS
+    for i in range(1, N-1):
+        A[i,i-1] = - (dt*prm.D_eff*(1/(dr*dr) - 1/(r[i]*2*dr)))
+        A[i,i] = dt*prm.D_eff*2/(dr*dr) + dt*prm.k + 1
+        A[i,i+1] = - dt*prm.D_eff*(1/(dr*dr) + 1/(r[i]*2*dr))
+    
+    #Résolution temporelle du problème
+    #Initialisation du vecteur RHS: condition initiale incluse: C(t=0,r)=0
+    B = np.zeros(N)
+    B[-1] = prm.C_e
+    
+    #Initialisation du vecteur de concentration: t = 0
+    C = np.zeros((N,len(temps)))
+    C_t = B
+    C[:,0] = C_t
+    i = 1
+    
+    #Boucle qui résoud le problème pour chaque pas de temps
+    while i < len(temps):
+        C_tdt = np.linalg.solve(A, C_t)
+        C[:,i] = C_tdt
+        C_t = C_tdt
+        i += 1
+    
+    return r, dr, dt, temps, C 
