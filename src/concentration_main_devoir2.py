@@ -21,6 +21,7 @@ prm = parametres()
 r, dr, dt, temps, C = concentration_mdf_o2_implicite(prm)
 temps = temps/prm.dt #en année
 
+#%% Plot de la solution
 # Plot des concentrations : solutions numérique en temps
 fig = plt.figure()
 ax = fig.add_subplot()
@@ -31,4 +32,16 @@ ax.set_ylabel(r'Concentration $C$ [mol/m$^3$]')
 ax.set_title(f'Profil de concentration de sel dans le pilier, \n à l\'état transitoire (N = {prm.N})')
 #plt.legend()
 plt.grid(zorder=0)
+plt.show()
+
+# Représentation 2D: maillage temporel et spatial
+ti, ri = np.meshgrid(temps, r, indexing='ij')
+
+# Tracé des résultats
+plt.figure()
+plt.contourf(ri, ti, C.transpose(), levels=200)
+plt.colorbar()
+plt.title(f'Profil de concentration de sel dans le pilier, \n à l\'état transitoire (N = {prm.N})')
+plt.xlabel('R [m]')
+plt.ylabel('t [s]')
 plt.show()
