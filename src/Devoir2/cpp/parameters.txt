@@ -1,0 +1,8 @@
+C_e = 20         # Concentration en sel à la surface du poteau [mol/m^3]
+D_eff = 1e-10    # Coefficient de diffusion effectif du sel dans le béton [1/s]
+R = 0.5          # Rayon du pilier [m]
+N = 10000        # Nombre de noeuds [-]
+k = 4e-9         # Constante de réaction [1/s]
+T = 4e9          # Temps final [s]
+K = 10        # Nombre de pas de temps [-]
+C_i = 20          # Concentration initiale [mol/m^3]
