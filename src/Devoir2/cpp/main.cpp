@@ -369,7 +369,7 @@ void save_to_csv(const std::string& filename, const Eigen::MatrixXd& r, const Ei
 }
 
 int main(int argc, char* argv[]) {
-
+    std::cout << "Number of threads: " << Eigen::nbThreads() << std::endl;
     auto time_start = std::chrono::high_resolution_clock::now();
 
     // Ensure the input file is passed as a command line argument
