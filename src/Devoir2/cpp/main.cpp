@@ -14,7 +14,7 @@
 using namespace std;
 using namespace Eigen;
 
-void read_input_file(const std::string& filename, double& C_e, double& D_eff, double& R, int& N, double& k, double& T, int& K, double& C_i) {
+void read_input_file(const std::string& filename, double& C_e, double& D_eff, double& R, int& N, double& k, double& T, int& K, double& C_i, int& source_type, std::string& output_filename) {
     std::ifstream inputFile(filename);
     if (!inputFile.is_open()) {
         std::cerr << "Failed to open input file." << std::endl;
@@ -50,6 +50,12 @@ void read_input_file(const std::string& filename, double& C_e, double& D_eff, do
             else if (key == "C_i") {
                 iss >> C_i;
             }
+            else if (key == "source") {
+                iss >> source_type;
+            }
+            else if (key == "output_filename") {
+                iss >> output_filename;
+            }
         }
     }
 
@@ -63,6 +69,8 @@ void read_input_file(const std::string& filename, double& C_e, double& D_eff, do
     std::cout << "T = " << T << std::endl;
     std::cout << "K = " << K << std::endl;
     std::cout << "C_i = " << C_i << std::endl;
+    std::cout << "source = " << source_type << std::endl;
+    std::cout << "output_filename = " << output_filename << std::endl;
 
 
     inputFile.close();
@@ -209,7 +217,7 @@ Eigen::VectorXd source_MMS(Parameters& prm, Eigen::VectorXd& r, double& t) {
     return f.matrix();
 }
 
-double source_zero(Parameters& prm, double& r, double& t) {
+Eigen::VectorXd source_zero(Parameters& /*prm*/, Eigen::VectorXd& r, double& /*t*/) {
     /*
     Fonction qui calcule le terme source selon la solution MMS
 
@@ -235,7 +243,7 @@ double source_zero(Parameters& prm, double& r, double& t) {
 
     */
 
-    return 0;
+    return Eigen::VectorXd::Zero(r.size());
 }
 
 std::tuple<Eigen::VectorXd, Eigen::VectorXd, Eigen::MatrixXd> concentration_mdf_o2(Parameters& prm, 
@@ -277,8 +285,6 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd, Eigen::MatrixXd> concentration_mdf_
 
     double dr = prm.R / (N - 1);
     double dt = prm.T / (K - 1);
-    std::cout << "dr :" << dr << std::endl;
-    std::cout << "dt :" << dt << std::endl;
 
     Eigen::MatrixXd C_all = Eigen::MatrixXd::Zero(K, N);
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(N, N);
@@ -293,7 +299,6 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd, Eigen::MatrixXd> concentration_mdf_
 
     // Initial condition
     Eigen::VectorXd C_t = Eigen::VectorXd::Constant(N, prm.C_i);
-    std::cout << "C_i :" << prm.C_i << std::endl;
     C_all.row(0) = C_t;
     
     for (int i=1; i<N-1; i++) {
@@ -377,31 +382,50 @@ int main(int argc, char* argv[]) {
 
     // Read parameters from the input file
     double C_e, D_eff, R, k, T, C_i;
-    int N, K;
+    int N, K, source_type;
+    std::string output_filename;
 
-    read_input_file(input_filename, C_e, D_eff, R, N, k, T, K, C_i);
+    read_input_file(input_filename, C_e, D_eff, R, N, k, T, K, C_i, source_type, output_filename);
 
     Parameters prm(C_e, D_eff, R, N, k, T, K, C_i);
 
     // Résolution du problème
     auto C_anal_MMS = concentration_anal_MMS(prm);
-    auto [r, t, C_mdf_o2] = concentration_mdf_o2(prm, source_MMS);
+    Eigen::MatrixXd C_mdf_o2;
+    Eigen::VectorXd r, t;
+    if (source_type == 0) {
+        std::tie(r, t, C_mdf_o2) = concentration_mdf_o2(prm, source_zero);
 
-    save_to_csv("output.csv", r, t, C_mdf_o2);
+        auto time_end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_time = time_end - time_start;
+        std::cout << "Elapsed time: " << elapsed_time.count() << " s" << std::endl;
+        
+        save_to_csv(output_filename, r, t, C_mdf_o2);
+    }
+    else {
+        std::tie(r, t, C_mdf_o2) = concentration_mdf_o2(prm, source_MMS);
+        
+        auto time_end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_time = time_end - time_start;
+        std::cout << "Elapsed time: " << elapsed_time.count() << " s" << std::endl;
+        
+        save_to_csv(output_filename, r, t, C_mdf_o2);
 
-    auto time_end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed_time = time_end - time_start;
-    std::cout << "Elapsed time: " << elapsed_time.count() << " s" << std::endl;
+        double L1 = erreur_L1(C_mdf_o2, C_anal_MMS.matrix());
+        double L2 = erreur_L2(C_mdf_o2, C_anal_MMS.matrix());
+        double L_inf = erreur_inf(C_mdf_o2, C_anal_MMS.matrix());
+
+        std::cout << std::fixed << std::setprecision(15);
+        std::cout << "L1 error = " << L1 << std::endl;
+        std::cout << "L2 error = " << L2 << std::endl;
+        std::cout << "L_inf error = " << L_inf << std::endl;
+    }
+
+
+    
 
     // std::cout << "C_anal_MMS \n" << C_anal_MMS << std::endl;
     // std::cout << "C_mdf_o2 \n" << C_mdf_o2 << std::endl;
 
-    double L1 = erreur_L1(C_mdf_o2, C_anal_MMS.matrix());
-    double L2 = erreur_L2(C_mdf_o2, C_anal_MMS.matrix());
-    double L_inf = erreur_inf(C_mdf_o2, C_anal_MMS.matrix());
-
-    std::cout << std::fixed << std::setprecision(15);
-    std::cout << "L1 error = " << L1 << std::endl;
-    std::cout << "L2 error = " << L2 << std::endl;
-    std::cout << "L_inf error = " << L_inf << std::endl;
+    
 }

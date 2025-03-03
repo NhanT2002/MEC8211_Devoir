@@ -2,6 +2,16 @@
 
 # Input parameters file
 input_file="parameters.txt"
+sed -i "s/^C_e = .*/C_e = 20                                        # Concentration en sel à la surface du poteau [mol/m^3]/" "$input_file"
+sed -i "s/^D_eff = .*/D_eff = 1e-10                                 # Coefficient de diffusion effectif du sel dans le béton [1/s]/" "$input_file"
+sed -i "s/^R = .*/R = 0.5                                           # Rayon du pilier [m]/" "$input_file"
+sed -i "s/^N = .*/N = 1000                                          # Nombre de noeuds [-]/" "$input_file"
+sed -i "s/^k = .*/k = 4e-9                                          # Constante de réaction [1/s]/" "$input_file"
+sed -i "s/^T = .*/T = 4e9                                           # Temps final [s]/" "$input_file"
+sed -i "s/^K = .*/K = 10000                                         # Nombre de pas de temps [-]/" "$input_file"
+sed -i "s/^C_i = .*/C_i = 20                                        # Concentration initiale [mol/m^3]/" "$input_file"
+sed -i "s/^source = .*/source = 1                                   # 0 = source_zero | 1 = source_MMS/" "$input_file"
+sed -i "s/^output_filename = .*/output_filename = output_MMS.csv    # output_file name/" "$input_file"
 
 ########################################## Space convergence ##########################################
 # Modify the K value in the parameters file
