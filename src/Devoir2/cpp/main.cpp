@@ -126,8 +126,8 @@ VectorXd solveSparseSystemBiCGSTAB(const MatrixXd& A, const VectorXd& B) {
         return VectorXd();
     }
 
-    std::cout << "BiCGSTAB solver iterations: " << solver.iterations() << std::endl;
-    std::cout << "Estimated error: " << solver.error() << std::endl;
+    // std::cout << "BiCGSTAB solver iterations: " << solver.iterations() << std::endl;
+    // std::cout << "Estimated error: " << solver.error() << std::endl;
 
     return x;
 }
@@ -306,8 +306,8 @@ std::tuple<Eigen::VectorXd, Eigen::VectorXd, Eigen::MatrixXd> concentration_mdf_
         // std::cout << "Time step: " << k << std::endl;
         B(Eigen::seq(1, Eigen::last-1)) = -C_t(Eigen::seq(1, Eigen::last-1)) - dt * source(prm, r, t(k))(Eigen::seq(1, Eigen::last-1));
         // C_t = A.partialPivLu().solve(B);
-        C_t = solveSparseSystem(A, B);
-        // C_t = solveSparseSystemBiCGSTAB(A, B);
+        // C_t = solveSparseSystem(A, B);
+        C_t = solveSparseSystemBiCGSTAB(A, B);
         C_all.row(k) = C_t;
     }
 
