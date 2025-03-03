@@ -1,5 +1,5 @@
-## Il faut avoir la librairie eigen3 d'installer sur la machine.
-## Modifier les parametres avant d'executer.
+Il faut avoir la librairie eigen3 d'installer sur la machine.
+Modifier les parametres avant d'executer.
 
 ## Pour compiler :
 ```bash
