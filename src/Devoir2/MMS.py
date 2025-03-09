@@ -46,6 +46,9 @@ t_range = np.linspace(0, 4e9, 10)
 
 C = sp.lambdify((r, t, R, C_e), C_ana, 'numpy')
 
+# Set font size
+plt.rcParams.update({'font.size': 16})
+
 plt.figure(figsize=(12, 9))
 for t_val in t_range:
     plt.plot(r_range, C(r_range, t_val, 0.5, 20), label=f"t = {t_val:.2e}")
@@ -62,7 +65,7 @@ f_source = sp.lambdify((r, t, R, C_e, Deff, k), f, 'numpy')
 plt.figure(figsize=(12, 9))
 for t_val in t_range:
     plt.plot(r_range, f_source(r_range, t_val, 0.5, 20, 1e-10, 4e-9), label=f"t = {t_val:.2e}")
-plt.legend()
+plt.legend(loc='upper left', fontsize=11)
 plt.xlabel('r [m]')
 plt.ylabel('f [mol/$m^3$/s]')
 plt.grid()
