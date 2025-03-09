@@ -1,5 +1,5 @@
 Il faut avoir la librairie eigen3 d'installer sur la machine et le mettre dans /usr/include/eigen3.
-Modifier les parametres avant d'executer.
+Modifier le fichier parameters.txt avant d'executer.
 
 ## Pour compiler :
 ```bash
