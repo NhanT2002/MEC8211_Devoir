@@ -31,7 +31,7 @@ def plot2(filename) :
     plt.figure()
     plt.plot(r, np.array(data.iloc[0, 1:]), label=f't = {data.iloc[0, 0]:.2e}')
     for i in np.logspace(0, np.log10(len(data)-1), 10, dtype=int):
-        plt.plot(r, np.array(data.iloc[i, 1:]), label=f't = {data.iloc[i, 0]:.2e}')
+        plt.plot(r, np.array(data.iloc[i, 1:]), "-o", label=f't = {data.iloc[i, 0]:.2e}')
     plt.xlabel(r'Rayon du pilier $r$ [m]')
     plt.ylabel(r'Concentration $C$ [mol/m$^3$]')
     plt.title(f'Profil de concentration de sel dans le pilier (N = {len(r)})')
