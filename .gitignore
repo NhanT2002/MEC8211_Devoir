@@ -1,0 +1,5 @@
+output*.csv
+.vscode/
+*.svg
+src/Devoir2/__pycache__/
+*/__pycache__/
