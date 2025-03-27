@@ -3,3 +3,4 @@ output*.csv
 *.svg
 src/Devoir2/__pycache__/
 */__pycache__/
+src/Devoir3/*.png
