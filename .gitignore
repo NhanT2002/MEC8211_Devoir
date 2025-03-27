@@ -4,3 +4,5 @@ output*.csv
 src/Devoir2/__pycache__/
 */__pycache__/
 src/Devoir3/*.png
+src/Devoir3/__pycache__/
+src/Devoir3/*.asv
