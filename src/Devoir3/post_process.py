@@ -26,7 +26,7 @@ k_mean = np.mean(k, axis=0)
 p_hat = np.log((k_mean[1]-k_mean[3])/(k_mean[3]-k_mean[7]))/np.log(2)
 
 error = np.abs(k_mean[-1]-k_mean)/k_mean[-1]
-order, intercept = np.polyfit(np.log(dx_mean[1:-1]), np.log(error[1:-1]), 1)
+order, intercept = np.polyfit(np.log(dx_mean[4:-1]), np.log(error[4:-1]), 1)
 
 ref_y = np.exp(intercept) * dx_mean**order
 
