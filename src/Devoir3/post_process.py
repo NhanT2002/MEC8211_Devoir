@@ -59,6 +59,7 @@ plt.gca().spines['left'].set_linewidth(2)
 plt.gca().spines['right'].set_linewidth(2)
 plt.gca().spines['top'].set_linewidth(2)
 plt.tick_params(width=2, which='both', direction='in', top=True, right=True, length=6)
+plt.savefig("convergence_k.svg", dpi=300, bbox_inches='tight')
 
 
 data = pd.read_csv("results_seed_0.csv")
@@ -77,6 +78,7 @@ p = stats.norm.pdf(x, mu, std)
 plt.plot(x, p, color="tab:orange", linewidth=2, label='Normal fit, $\mu$={:.2f}, $\sigma$={:.2f}'.format(mu, std))
 plt.legend()
 plt.grid()
+plt.savefig("histogram_d_equivalent.svg", dpi=300, bbox_inches='tight')
 
 # plot histogram of the porosity
 plt.figure()
@@ -91,6 +93,7 @@ p = stats.norm.pdf(x, mu, std)
 plt.plot(x, p, color="tab:orange", linewidth=2, label='Normal fit, $\mu$={:.3f}, $\sigma$={:.3f}'.format(mu, std))
 plt.legend()
 plt.grid()
+plt.savefig("histogram_poro_eff.svg", dpi=300, bbox_inches='tight')
 
 # plot cummulative distribution function of porosity
 plt.figure()
@@ -101,6 +104,7 @@ plt.title('Cumulative Distribution Function of Porosity')
 cdf = stats.norm.cdf(x, mu, std)
 plt.plot(x, cdf, color="tab:orange", linewidth=2)
 plt.grid()
+plt.savefig("cdf_poro_eff.svg", dpi=300, bbox_inches='tight')
 
 # plot histogram of the permeability
 plt.figure()
@@ -115,6 +119,7 @@ p = stats.norm.pdf(x, mu, std)
 plt.plot(x, p, color="tab:orange", linewidth=2, label='Normal fit, $\mu$={:.2f}, $\sigma$={:.2f}'.format(mu, std))
 plt.legend()
 plt.grid()
+plt.savefig("histogram_k.svg", dpi=300, bbox_inches='tight')
 
 # plot cummulative distribution function of permeability
 plt.figure()
@@ -125,6 +130,7 @@ plt.title('Cumulative Distribution Function of Permeability')
 cdf = stats.norm.cdf(x, mu, std)
 plt.plot(x, cdf, color="tab:orange", linewidth=2)
 plt.grid()
+plt.savefig("cdf_k.svg", dpi=300, bbox_inches='tight')
 
 
 
