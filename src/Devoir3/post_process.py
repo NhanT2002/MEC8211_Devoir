@@ -62,12 +62,14 @@ plt.tick_params(width=2, which='both', direction='in', top=True, right=True, len
 plt.savefig("convergence_k.svg", dpi=300, bbox_inches='tight')
 
 
+# --------------------------------------------------- u_input ---------------------------------------------------
+
 data = pd.read_csv("results_seed_0.csv")
 
 
 # plot histogram of the diameter
 plt.figure()
-plt.hist(data["d_equivalent"], bins=20, color='tab:blue', alpha=0.7, density=True)
+plt.hist(data["d_equivalent"], bins=20, color='tab:blue', alpha=0.7, density=True, edgecolor='black')
 plt.xlabel(r'$d_{eq}$ [$\mu m$]')
 plt.ylabel('PDF')
 plt.title('Histogram of Equivalent Diameter')
@@ -82,7 +84,7 @@ plt.savefig("histogram_d_equivalent.svg", dpi=300, bbox_inches='tight')
 
 # plot histogram of the porosity
 plt.figure()
-plt.hist(data["poro_eff"], bins=20, color='tab:blue', alpha=0.7, density=True)
+plt.hist(data["poro_eff"], bins=20, color='tab:blue', alpha=0.7, density=True, edgecolor='black')
 plt.xlabel('Porosity')
 plt.ylabel('PDF')
 plt.title('Histogram of Porosity')
@@ -97,7 +99,7 @@ plt.savefig("histogram_poro_eff.svg", dpi=300, bbox_inches='tight')
 
 # plot cummulative distribution function of porosity
 plt.figure()
-plt.hist(data["poro_eff"], bins=20, color='tab:blue', alpha=0.7, density=True, cumulative=True)
+plt.hist(data["poro_eff"], bins=20, color='tab:blue', alpha=0.7, density=True, cumulative=True, edgecolor='black')
 plt.xlabel('Porosity')
 plt.ylabel('CDF')
 plt.title('Cumulative Distribution Function of Porosity')
@@ -108,27 +110,30 @@ plt.savefig("cdf_poro_eff.svg", dpi=300, bbox_inches='tight')
 
 # plot histogram of the permeability
 plt.figure()
-plt.hist(data["k_in_micron2"], bins=20, color='tab:blue', alpha=0.7, density=True)
+plt.hist(data["k_in_micron2"], bins=20, color='tab:blue', alpha=0.7, density=True, edgecolor='black')
 plt.xlabel(r'$k$ [$\mu m^2$]')
 plt.ylabel('PDF')
 plt.title('Histogram of Permeability')
-mu, std = stats.norm.fit(data["k_in_micron2"])
+mu, std = stats.norm.fit(np.log(data["k_in_micron2"])) # Fit a log-normal distribution to the data
 xmin, xmax = plt.xlim()
 x = np.linspace(xmin, xmax, 100)
-p = stats.norm.pdf(x, mu, std)
-plt.plot(x, p, color="tab:orange", linewidth=2, label='Normal fit, $\mu$={:.2f}, $\sigma$={:.2f}'.format(mu, std))
+lognorm_pdf = stats.lognorm.pdf(x, s=std, scale=np.exp(mu))  # Log-normal PDF
+plt.plot(x, lognorm_pdf, color="tab:orange", linewidth=2, label='Log-normal fit, $\mu$={:.3f}, $\sigma$={:.3f}'.format(mu, std))
 plt.legend()
 plt.grid()
+# add the median and FVG
+plt.text(0.5, 0.7, f'Median = $e^\mu = $ {np.exp(mu):.3f} $\mu m^2$', fontsize=12, transform=plt.gca().transAxes, color='k')
+plt.text(0.5, 0.65, f'FVG = $e^\sigma = $ {np.exp(std):.3f} $\mu m^2$', fontsize=12, transform=plt.gca().transAxes, color='k')
 plt.savefig("histogram_k.svg", dpi=300, bbox_inches='tight')
 
 # plot cummulative distribution function of permeability
 plt.figure()
-plt.hist(data["k_in_micron2"], bins=20, color='tab:blue', alpha=0.7, density=True, cumulative=True)
+plt.hist(data["k_in_micron2"], bins=20, color='tab:blue', alpha=0.7, density=True, cumulative=True, edgecolor='black')
 plt.xlabel(r'$k$ [$\mu m^2$]')
 plt.ylabel('CDF')
 plt.title('Cumulative Distribution Function of Permeability')
-cdf = stats.norm.cdf(x, mu, std)
-plt.plot(x, cdf, color="tab:orange", linewidth=2)
+lognorm_cdf = stats.lognorm.cdf(x, s=std, scale=np.exp(mu))
+plt.plot(x, lognorm_cdf, color="tab:orange", linewidth=2)
 plt.grid()
 plt.savefig("cdf_k.svg", dpi=300, bbox_inches='tight')
 
