@@ -64,7 +64,7 @@ plt.tick_params(width=2, which='both', direction='in', top=True, right=True, len
 plt.savefig("convergence_k.svg", dpi=300, bbox_inches='tight')
 
 
-# --------------------------------------------------- u_input ---------------------------------------------------
+#%% --------------------------------------------------- u_input ---------------------------------------------------
 
 data = pd.read_csv("results_seed_0.csv")
 
@@ -90,10 +90,10 @@ plt.hist(data["poro_eff"], bins=30, color='tab:blue', alpha=0.7, density=True, e
 plt.xlabel('Porosity')
 plt.ylabel('PDF')
 plt.title('Histogram of Porosity')
-mu, std = stats.norm.fit(data["poro_eff"]) 
+mu_poro, std_poro = stats.norm.fit(data["poro_eff"]) 
 xmin, xmax = plt.xlim()
 x = np.linspace(xmin, xmax, 100)
-p = stats.norm.pdf(x, mu, std)
+p = stats.norm.pdf(x, mu_poro, std_poro)
 plt.plot(x, p, color="tab:orange", linewidth=2, label='Normal fit, $\mu$={:.3f}, $\sigma$={:.3e}'.format(mu, std))
 plt.legend()
 plt.grid()
@@ -143,7 +143,7 @@ plt.grid()
 plt.savefig("cdf_k.svg", dpi=300, bbox_inches='tight')
 
 
-# --------------------------------------------- Error of model ---------------------------------------------
+#%% --------------------------------------------- Error of model ---------------------------------------------
 u_num = GCI/2
 u_input = log_stddev
 u_d = np.sqrt(14.7**2 + 10.0**2)
@@ -152,6 +152,15 @@ E = np.exp(mu) - 80.6
 delta_model_lower = E - 2. * u_val
 delta_model_upper = E + 2. * u_val
 
-
-
+# plot distance of error (with 200x200 results)
+fig=plt.figure()
+ax=fig.add_subplot(111)
+plt.xlabel(r'Porosity [-]')
+plt.ylabel(r'$E = S-D$ [$\mu m^2$]')
+plt.title('Realtive model error')
+ax.set_xlim(xmin = 0.8, xmax = 1)
+ax.set_ylim(ymin = -100, ymax = 10)
+ax.plot(mu_poro, E, 'o')
+ax.hlines(0, 0.8, 1.0, 'k')
+ax.errorbar(mu_poro, E, yerr = 2*u_val, xerr = std_poro, ecolor = "tab:orange", capsize = 5, zorder = 0)
 
