@@ -149,8 +149,8 @@ u_input = log_stddev
 u_d = np.sqrt(14.7**2 + 10.0**2)
 u_val = np.sqrt(u_num**2 + u_input**2 + u_d**2)
 E = np.exp(mu) - 80.6
-delta_model_lower = E - 1.96 * u_val
-delta_model_upper = E + 1.96 * u_val
+delta_model_lower = E - 2. * u_val
+delta_model_upper = E + 2. * u_val
 
 
 
