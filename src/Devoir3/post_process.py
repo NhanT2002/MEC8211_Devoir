@@ -1,11 +1,15 @@
+#%%Importation des modules
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
+#%% Importation des données
+#Seeds generated from LBM from MATLAB
 seeds = [101, 102, 103, 104, 105]
 
+#Initialisation of vector ranges for data
 dx = []
 poro = []
 Re = []
@@ -18,7 +22,7 @@ for seed in seeds:
     poro.append(data["poro_eff"])
     Re.append(data["Re"])
     k.append(data["k_in_micron2"])
-
+#%% Mean values of the parameters taken from the different seeds
 dx_mean = np.mean(dx, axis=0)
 n_raf = np.arange(len(dx_mean)) + 1
 nx = 100*n_raf
@@ -26,12 +30,10 @@ poro_mean = np.mean(poro, axis=0)
 Re_mean = np.mean(Re, axis=0)
 k_mean = np.mean(k, axis=0)
 
-p_hat = np.log((k_mean[0]-k_mean[1])/(k_mean[1]-k_mean[3]))/np.log(2)
-p_hat = np.log((k_mean[1]-k_mean[3])/(k_mean[3]-k_mean[7]))/np.log(2)
-GCI = 3.0/(2**p_hat-1)*np.abs(k_mean[1]-k_mean[0])
-
+#%% Vérification du code
+# Vérifier si l'on est dans une région asymptotique
 error = np.abs(k_mean[-1]-k_mean)/k_mean[-1]
-order, intercept = np.polyfit(np.log(dx_mean[4:-1]), np.log(error[4:-1]), 1)
+order, intercept = np.polyfit(np.log(dx_mean[:-1]), np.log(error[:-1]), 1)
 
 ref_y = np.exp(intercept) * dx_mean**order
 
@@ -49,7 +51,7 @@ equation_text_obj.set_position((0.4, 0.2))
 # Ajouter des étiquettes et un titre au graphique
 plt.legend()
 plt.xlabel(f'$\Delta x$ [m]')
-plt.ylabel(r'$|\frac{k_{finest}-k_{\Delta x}}{k_{finest}}|$ [$\mu m^2$]')
+plt.ylabel(r'$|\frac{k_{finest}-k_{\Delta x}}{k_{finest}}|$ [-]')
 plt.title('Convergence of the permeability $k$')
 plt.xscale('log')
 plt.yscale('log')
@@ -63,12 +65,26 @@ plt.gca().spines['top'].set_linewidth(2)
 plt.tick_params(width=2, which='both', direction='in', top=True, right=True, length=6)
 plt.savefig("convergence_k.svg", dpi=300, bbox_inches='tight')
 
+#%% Vérification de solution, après avoir vu que l'on converge vers une solution
+# Ordre de convergence obeservé
+# pour NX = 100;200;400 pour avoir le ratio de r = 2
+p_hat_a = np.log((k_mean[0]-k_mean[1])/(k_mean[1]-k_mean[3]))/np.log(2)
 
+# pour NX = 200;400;800 pour avoir le ratio de r = 2
+p_hat_b = np.log((k_mean[1]-k_mean[3])/(k_mean[3]-k_mean[7]))/np.log(2)
+
+# Calcul du GCI selon la valeur obtenue de p_hat_b, soit celui avec le maillage plus raffiné
+FS = 3.0 #Facteur de sécurité
+r = 2.0 # ratio de raffinement de maillage
+# on voudra faire l'analyse de propagation avec NX = 200, donc on reste consitent
+f2 = k_mean[0] # NX = 100, maillage le moins fin
+f1 = k_mean[1] # NX = 200, maillage le plus fin
+GCI = FS/(r**p_hat_b-1)*np.abs(f2-f1)
 #%% --------------------------------------------------- u_input ---------------------------------------------------
-
+# Load data from the random seed generated with LBM in MATLAB
 data = pd.read_csv("results_seed_0.csv")
 
-
+# Plot the different statistical graphs (PFD, CFD) with their respective parameters
 # plot histogram of the diameter
 plt.figure()
 plt.hist(data["d_equivalent"], bins=30, color='tab:blue', alpha=0.7, density=True, edgecolor='black')
@@ -144,6 +160,7 @@ plt.savefig("cdf_k.svg", dpi=300, bbox_inches='tight')
 
 
 #%% --------------------------------------------- Error of model ---------------------------------------------
+# with u_input
 u_num = GCI/2
 u_input = log_stddev
 u_d = np.sqrt(14.7**2 + 10.0**2)
@@ -152,15 +169,21 @@ E = np.exp(mu) - 80.6
 delta_model_lower = E - 2. * u_val
 delta_model_upper = E + 2. * u_val
 
+#without u_input
+u_val_no_input = np.sqrt(u_num**2 + u_d**2)
+delta_model_lower_no_input = E - 2. * u_val_no_input
+delta_model_upper_no_input = E + 2. * u_val_no_input
+
 # plot distance of error (with 200x200 results)
 fig=plt.figure()
 ax=fig.add_subplot(111)
 plt.xlabel(r'Porosity [-]')
 plt.ylabel(r'$E = S-D$ [$\mu m^2$]')
-plt.title('Realtive model error')
+plt.title('Relative model error for mesh of 200x200')
 ax.set_xlim(xmin = 0.8, xmax = 1)
 ax.set_ylim(ymin = -100, ymax = 10)
 ax.plot(mu_poro, E, 'o')
 ax.hlines(0, 0.8, 1.0, 'k')
-ax.errorbar(mu_poro, E, yerr = 2*u_val, xerr = std_poro, ecolor = "tab:orange", capsize = 5, zorder = 0)
-
+ax.errorbar(mu_poro, E, yerr = 2*u_val, xerr = std_poro, ecolor = "tab:orange", capsize = 5, label = r'$u_{input} \neq 0$', zorder = 0)
+ax.errorbar(mu_poro, E, yerr = 2*u_val_no_input, xerr = std_poro, ecolor = "tab:green", capsize = 5, label = r'$u_{input} = 0$', zorder = 0)
+ax.legend(loc='lower right')
