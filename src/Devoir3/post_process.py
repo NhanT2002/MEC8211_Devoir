@@ -29,7 +29,6 @@ k_mean = np.mean(k, axis=0)
 p_hat = np.log((k_mean[0]-k_mean[1])/(k_mean[1]-k_mean[3]))/np.log(2)
 p_hat = np.log((k_mean[1]-k_mean[3])/(k_mean[3]-k_mean[7]))/np.log(2)
 GCI = 3.0/(2**p_hat-1)*np.abs(k_mean[1]-k_mean[0])
-u_num = GCI/2
 
 error = np.abs(k_mean[-1]-k_mean)/k_mean[-1]
 order, intercept = np.polyfit(np.log(dx_mean[4:-1]), np.log(error[4:-1]), 1)
@@ -142,6 +141,16 @@ lognorm_cdf = stats.lognorm.cdf(x, s=std, scale=np.exp(mu))
 plt.plot(x, lognorm_cdf, color="tab:orange", linewidth=2)
 plt.grid()
 plt.savefig("cdf_k.svg", dpi=300, bbox_inches='tight')
+
+
+# --------------------------------------------- Error of model ---------------------------------------------
+u_num = GCI/2
+u_input = log_stddev
+u_d = np.sqrt(14.7**2 + 10.0**2)
+u_val = np.sqrt(u_num**2 + u_input**2 + u_d**2)
+E = np.exp(mu) - 80.6
+delta_model_lower = E - 1.96 * u_val
+delta_model_upper = E + 1.96 * u_val
 
 
 
